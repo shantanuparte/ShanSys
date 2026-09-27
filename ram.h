@@ -1,6 +1,7 @@
 #ifndef MY_RAM
 #define MY_RAM
 
-void get_ram_stats();
+long int* get_ram_stats();
+void get_percentage_of_ram(long int* array);
 
 #endif

@@ -8,6 +8,12 @@ int main(int args, char *argv[])
 
     printf("---WELCOME TO SHANSYS---\n\n");
 
-    get_ram_stats();
     
+   long int *stats = get_ram_stats();
+if (stats != NULL) {
+    printf("Percentage: %ld%%\n", stats[3]);
+    free(stats); // Prevent memory leak
+}
+    return 0;
+
 }
