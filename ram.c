@@ -3,8 +3,8 @@
 #include <string.h>
 #include "ram.h"
 
-
-long int* get_ram_stats(){
+long int *get_ram_stats()
+{
 
     FILE *ram_ptr = fopen("/proc/meminfo", "r");
 
@@ -13,49 +13,60 @@ long int* get_ram_stats(){
         fprintf(stderr, "Error: In file opening of ram");
         return NULL;
     }
-    
 
     char ram_buff[1024];
     long int ram_stats[3];
     size_t s = sizeof(long int);
+    long int total = 0;
+    long int free_ram = 0;
+    long int avaliable = 0;
 
     int parsed = 0, total_parsed = 0;
-    for(int i = 0; i < 3; i++){
-        fgets(ram_buff,sizeof(ram_buff), ram_ptr);
-        parsed = sscanf(ram_buff, "%*s  %ld",&ram_stats[i]);
-        total_parsed += parsed;
-    }
 
-    if (total_parsed != 3)
+    while (fgets(ram_buff, sizeof(ram_buff), ram_ptr))
     {
-        fclose(ram_ptr);
-        return NULL;
+        if (sscanf(ram_buff, "MemTotal: %ld", &total))
+        {
+            continue;
+        }
+        if (sscanf(ram_buff, "MemFree: %ld", &free_ram))
+        {
+            continue;
+        }
+        if (sscanf(ram_buff, "MemAvailable: %ld", &avaliable))
+        {
+            continue;
+        }
     }
+    
 
-    long int* dy_ram_stats_array = malloc(s * 4);
+    
 
-    for (int i = 0; i < 3; i++)
-    {
-        printf("%ld\n",ram_stats[i]);
-        dy_ram_stats_array[i] = ram_stats[i];
-    }
+    long int *dy_ram_stats_array = malloc(s * 4);
 
+    dy_ram_stats_array[0] = total;
+    dy_ram_stats_array[1] = free_ram;
+    dy_ram_stats_array[2] = avaliable;
     get_percentage_of_ram(dy_ram_stats_array);
-
+    
+    
 
     fclose(ram_ptr);
-    
+
     return dy_ram_stats_array;
 }
 
+void get_percentage_of_ram(long int *array)
+{
 
-void get_percentage_of_ram(long int * array){
-
-    long int total,free_space,percentage;
+    long int total, free_space, percentage;
     total = array[0];
     free_space = array[1];
 
-    percentage = ((double)free_space/total) * 100;
+    percentage = ((double)free_space / total) * 100;
     array[3] = percentage;
+}
 
+void show_ram_graph()
+{
 }
