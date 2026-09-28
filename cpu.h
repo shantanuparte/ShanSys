@@ -1,8 +1,30 @@
 #ifndef CPU_USAGE
 #define CPU_USAGE
 
-void get_cpu_stas();
-void get_cpu_basic_info();
-void get_cpu_percentage(); 
+struct Cpu_Entries
+{
+    //due to structure padding write from max sizes to lower sized not ai
+    char model[100];
+    char vendor[100];
+    float freq;
+    unsigned int cores;
+    unsigned int seb;
+};
 
-#endif 
+struct Cpu_jiffies
+{
+    unsigned long int user;
+    unsigned long int nice;
+    unsigned long int system;
+    unsigned long int idel;
+    unsigned long int iowait;
+    unsigned long int irq;
+    unsigned long int softirq;
+    unsigned long int steal;
+};
+
+void get_cpu_stas();
+struct Cpu_Entries* get_cpu_basic_info();
+void get_cpu_percentage();
+
+#endif
