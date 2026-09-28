@@ -3,9 +3,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-void get_cpu_stas()
-{
-}
+
 
 void get_cpu_basic_info()
 {
@@ -17,8 +15,12 @@ void get_cpu_basic_info()
         return;
     }
     char cpu_info_buff[1024];
-    u_int8_t cores = 0;
-    while (fgets(cpu_info_buff, sizeof(cpu_info_buff), cpu_info_ptr) || stop == 5)
+    int cores = 0;
+    float freq = 0;
+    int sib = 0;
+    char vendor[100];
+    char model_name[100];
+    while (fgets(cpu_info_buff, sizeof(cpu_info_buff), cpu_info_ptr))
     {
 
         //model name	CPU name
@@ -27,16 +29,46 @@ void get_cpu_basic_info()
         // siblings	Logical CPUs / threads
         // cpu MHz	Current frequency
         // flags	Optional — CPU capabilities
-        if (sscanf(cpu_info_buff,"cpu cores: %s",&cores))
+        if (sscanf(cpu_info_buff,"cpu cores : %d",&cores))
+        {
+            stop++;
+            continue;
+        }
+        if (sscanf(cpu_info_buff,"cpu MHz : %f",&freq))
         {
             stop++;
             continue;
         }
         
+        if (sscanf(cpu_info_buff,"vendor_id : %s",vendor))
+        {
+            stop++;
+            continue;
+        }
+
+        if (sscanf(cpu_info_buff,"siblings : %d",&sib))
+        {
+            stop++;
+            continue;
+        }
+        
+        if (sscanf(cpu_info_buff,"model name : %s",model_name))
+        {
+            stop++;
+            continue;
+        }
+        
+
+        
+        
         
     }
 
-    printf("%d\n",cores);
+    printf("Model name: %s\n",model_name);
+    printf("Cores: %d\n",cores);
+    printf("Freq: %.2f MHz\n",freq);
+    printf("Vendor: %s\n",vendor);
+    printf("Logical cores: %d",sib);
 }
 
 void get_cpu_percentage()
@@ -54,4 +86,11 @@ void get_cpu_percentage()
 
     fgets(cpu_stats_buff, sizeof(cpu_stats_buff), cpu_stats_ptr);
     printf("%s", cpu_stats_buff);
+}
+
+
+void get_cpu_stas()
+{
+    get_cpu_basic_info();
+
 }
