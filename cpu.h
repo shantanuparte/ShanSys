@@ -3,7 +3,7 @@
 
 struct Cpu_Entries
 {
-    //due to structure padding write from max sizes to lower sized not ai
+    // due to structure padding write from max sizes to lower sized not ai
     char model[100];
     char vendor[100];
     float freq;
@@ -24,7 +24,7 @@ struct Cpu_jiffies
 };
 
 void get_cpu_stas();
-struct Cpu_Entries* get_cpu_basic_info();
-void get_cpu_percentage();
+struct Cpu_Entries *get_cpu_basic_info();
+struct Cpu_jiffies *get_cpu_jiffies();
 
 #endif
