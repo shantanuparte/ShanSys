@@ -6,7 +6,7 @@ struct Process_info
     char name[100];
     unsigned long int memory;
     int pid;
-    // int cpu;
+    // int cpu;  wanna add later 
     char state;
 };
 
