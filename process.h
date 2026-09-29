@@ -1,12 +1,13 @@
 #ifndef PROCESS_INFO
 #define PROCESS_INFO
 
-struct Info
+struct Process_info
 {
     char name[100];
-    int cpu;
-    int memory;
+    unsigned long int memory;
     int pid;
+    // int cpu;
+    char state;
 };
 
 void process_directory();

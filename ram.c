@@ -20,21 +20,24 @@ long int *get_ram_stats()
     long int total = 0;
     long int free_ram = 0;
     long int avaliable = 0;
-
+    int stop = 0;
     int parsed = 0, total_parsed = 0;
 
-    while (fgets(ram_buff, sizeof(ram_buff), ram_ptr))
+    while (fgets(ram_buff, sizeof(ram_buff), ram_ptr) || stop != 3)
     {
         if (sscanf(ram_buff, "MemTotal: %ld", &total))
-        {
+        {  
+            stop++;
             continue;
         }
         if (sscanf(ram_buff, "MemFree: %ld", &free_ram))
         {
+            stop++;
             continue;
         }
         if (sscanf(ram_buff, "MemAvailable: %ld", &avaliable))
         {
+            stop++;
             continue;
         }
     }

@@ -4,11 +4,50 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-void get_process_info(int pid){
+struct Process_info process[1000];
+int process_count = 0;
 
+void get_process_info(int pid)
+{
+    struct Process_info p;
     char path[256];
-    snprintf(path,sizeof(path),"/path/%d/stat");
+    char line[256];
+    snprintf(path, sizeof(path), "/proc/%d/status",pid); // I will not get cpu% for this so have to make something in helper. remember
 
+    FILE *file_ptr = fopen(path, "r");
+
+    if (file_ptr == NULL)
+    {
+        fprintf(stderr, "Error: Opning file");
+        return;
+    }
+
+    p.pid = pid;
+
+    while (fgets(line, sizeof(line), file_ptr) != NULL)
+    {
+        if (sscanf(line, "Name:\t%s", p.name))
+        {
+            continue;
+        }
+        if (sscanf(line, "State:\t%c", &p.state))
+        {
+            continue;
+        }
+        if (sscanf(line, "VmRSS:\t%ld", &p.memory))
+        {
+            continue;
+        }
+    }
+
+
+    fclose(file_ptr);
+    process[process_count] = p;
+    process_count++;
+}
+
+void store_array()
+{
 }
 
 int is_numric(const char *s)
@@ -35,7 +74,7 @@ void process_directory()
 
     if (directory == NULL)
     {
-        printf("Error opening directory");
+        fprintf(stderr, "Error opening directory");
         return;
     }
 
@@ -44,15 +83,23 @@ void process_directory()
         if (entry->d_type == DT_DIR && is_numric(entry->d_name))
         {
             int pid = atoi(entry->d_name);
-            printf("DIRECTORY: %s\n", entry->d_name);
+            get_process_info(pid);
         }
-        
-        
     }
 
     if (closedir(directory) == -1)
     {
-        printf("Error: closing directory.\n");
+        fprintf(stderr, "Error: closing directory.\n");
         return;
     }
+
+    for (int i = 0; i < process_count; i++)
+    {
+        printf("\nName: %s\n",process[i].name);
+        printf("Pid: %d\n",process[i].pid);
+        printf("Memory: %ld\n",process[i].memory);
+        printf("State: %c\n",process[i].state);
+    }
+    
+
 }
