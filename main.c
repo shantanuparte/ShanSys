@@ -3,23 +3,25 @@
 #include <stdlib.h>
 #include "ram.h"
 #include "cpu.h"
+#include "process.h"
+
+
 
 int main(int args, char *argv[])
 {
 
-    printf("---WELCOME TO SHANSYS---\n\n");
+    // printf("---WELCOME TO SHANSYS---\n\n");
 
-    long int *stats = get_ram_stats();
-    if (stats != NULL)
-    {
-        printf("Ram Usage: %ld%%\n", stats[3]);
-        free(stats); // Prevent memory leak
-    }
+    // long int *stats = get_ram_stats();
+    // if (stats != NULL)
+    // {
+    //     printf("Ram Usage: %ld%%\n", stats[3]);
+    //     free(stats); // Prevent memory leak
+    // }
 
+    // get_cpu_stas();
 
-    get_cpu_stas();
-
-    
+    process_directory();
 
     return 0;
 }
