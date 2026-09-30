@@ -69,7 +69,3 @@ void get_percentage_of_ram(long int *array)
     percentage = ((double)free_space / total) * 100;
     array[3] = percentage;
 }
-
-void show_ram_graph()
-{
-}

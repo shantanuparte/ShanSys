@@ -27,12 +27,6 @@ struct Cpu_Entries *get_cpu_basic_info()
     while (fgets(cpu_info_buff, sizeof(cpu_info_buff), cpu_info_ptr))
     {
 
-        // model name	CPU name
-        //  vendor_id	CPU manufacturer
-        //  cpu cores	Physical cores
-        //  siblings	Logical CPUs / threads
-        //  cpu MHz	Current frequency
-        //  flags	Optional — CPU capabilities
         if (sscanf(cpu_info_buff, "cpu cores : %d", &cores))
         {
             stop++;
@@ -92,17 +86,12 @@ struct Cpu_jiffies *get_cpu_jiffies()
     return cj;
 }
 
-long int get_cpu_percentage()
+long int get_cpu_percentage(struct Cpu_jiffies *cj1, struct Cpu_jiffies *cj2)
 {
-    struct Cpu_jiffies *cj1 = get_cpu_jiffies();
 
     unsigned long int Idle_time1 = cj1->idel + cj1->iowait;
     unsigned long int Active_time1 = cj1->user + cj1->nice + cj1->system + cj1->irq + cj1->softirq + cj1->steal;
     unsigned long int Total_time1 = Idle_time1 + Active_time1;
-
-    sleep(1);
-
-    struct Cpu_jiffies *cj2 = get_cpu_jiffies();
 
     unsigned long int Idle_time2 = cj2->idel + cj2->iowait;
     unsigned long int Active_time2 = cj2->user + cj2->nice + cj2->system + cj2->irq + cj2->softirq + cj2->steal;
@@ -138,6 +127,4 @@ void get_cpu_stas()
     printf("Vendor: %s\n", ent1->vendor);
     printf("Logical cores: %d\n\n", ent1->seb);
 
-    percentage = get_cpu_percentage();
-    printf("\n\nCPU USAGE: %ld\n", percentage);
 }

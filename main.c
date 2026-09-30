@@ -7,7 +7,7 @@
 
 
 
-int main(int args, char *argv[])
+int main(int args, char *argv[])//Sleep should be added in main not in other file
 {
 
     // printf("---WELCOME TO SHANSYS---\n\n");
@@ -22,6 +22,7 @@ int main(int args, char *argv[])
     // get_cpu_stas();
 
     process_directory();
+    
 
     return 0;
 }

@@ -23,8 +23,9 @@ struct Cpu_jiffies
     unsigned long int steal;
 };
 
-void get_cpu_stas();
 struct Cpu_Entries *get_cpu_basic_info();
 struct Cpu_jiffies *get_cpu_jiffies();
+void get_cpu_stas();
+long int get_cpu_percentage(struct Cpu_jiffies *cj1, struct Cpu_jiffies *cj2);
 
 #endif

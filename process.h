@@ -1,6 +1,8 @@
 #ifndef PROCESS_INFO
 #define PROCESS_INFO
 
+#define PROCESS_CAPACITY 750
+
 struct Process_info
 {
     char name[100];
@@ -9,6 +11,9 @@ struct Process_info
     // int cpu;  wanna add later 
     char state;
 };
+
+
+
 
 void process_directory();
 int is_numric(const char *s);
