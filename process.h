@@ -14,10 +14,10 @@ struct Process_info
 
 struct Process_jiffies
 {
-    long int utime;
-    long int stime;
+    unsigned long int utime;
+    unsigned long int stime;
 };
-void process_jiffies_process_info(int pid, int i);
+void process_jiffies_process_info(int pid, int i, struct Process_jiffies *cpu_array);
 struct Process_jiffies *initilize_cpu_array();
 int compare_mem(const void *a, const void *b);
 void sort_array(struct Process_info *process);

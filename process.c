@@ -8,10 +8,7 @@ struct Process_info *process = NULL;
 int process_count = 0;
 int process_capacity = PROCESS_CAPACITY;
 
-struct Process_jiffies *cpu_array = NULL;
-int cpu_array_capacity = 10;
-
-void process_jiffies_process_info(int pid, int i)
+void process_jiffies_process_info(int pid, int i, struct Process_jiffies *cpu_array)
 {
     char path[1024];
     char buff[1024];
@@ -21,18 +18,18 @@ void process_jiffies_process_info(int pid, int i)
     struct Process_jiffies p = {0};
     FILE *file_ptr = fopen(path, "r");
     if (file_ptr && fgets(buff, sizeof(buff), file_ptr))
-{
-    sscanf(buff, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %lu %lu", &p.utime, &p.stime);
-    fclose(file_ptr);
-}
-
+    {
+        sscanf(buff, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %lu %lu", &p.utime, &p.stime);
+        fclose(file_ptr);
+    }
 
     cpu_array[i] = p;
-
 }
 
 struct Process_jiffies *initilize_cpu_array()
 {
+    struct Process_jiffies *cpu_array = NULL;
+    int cpu_array_capacity = 10;
     cpu_array = malloc(sizeof(struct Process_jiffies) * cpu_array_capacity);
     if (cpu_array == NULL)
     {
@@ -42,7 +39,7 @@ struct Process_jiffies *initilize_cpu_array()
     return cpu_array;
 }
 
-struct Process_info* initilize_process_array()
+struct Process_info *initilize_process_array()
 {
 
     process = malloc(process_capacity * sizeof(struct Process_info));
