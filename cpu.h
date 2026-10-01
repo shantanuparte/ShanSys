@@ -21,6 +21,7 @@ struct Cpu_jiffies
     unsigned long int irq;
     unsigned long int softirq;
     unsigned long int steal;
+    unsigned long int total;
 };
 
 struct Cpu_Entries *get_cpu_basic_info();

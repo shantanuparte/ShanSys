@@ -82,7 +82,7 @@ struct Cpu_jiffies *get_cpu_jiffies()
     // printf("%s", cpu_stats_buff);
 
     sscanf(cpu_stats_buff, "cpu %ld %ld %ld %ld %ld %ld %ld %ld", &cj->user, &cj->nice, &cj->system, &cj->idel, &cj->iowait, &cj->irq, &cj->softirq, &cj->steal);
-
+    cj->total = cj->user + cj->nice + cj->system + cj->idel + cj->iowait + cj->irq + cj->softirq + cj->steal;
     return cj;
 }
 
@@ -102,14 +102,12 @@ long int get_cpu_percentage(struct Cpu_jiffies *cj1, struct Cpu_jiffies *cj2)
 
     if (delta_total == 0)
     {
-        free(cj1);
-        free(cj2);
+       
         return 0;
     }
 
     unsigned long int cpu_percentage = ((delta_total - delta_idle) * 100) / delta_total;
-    free(cj1);
-    free(cj2);
+    
 
     return cpu_percentage;
 }

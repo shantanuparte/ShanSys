@@ -3,26 +3,46 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct Process_info *process = NULL;
 int process_count = 0;
 int process_capacity = PROCESS_CAPACITY;
 
+double calculate_process_percentages(struct Process_jiffies *p1,
+                                     struct Process_jiffies *p2,
+                                     unsigned long total_time)
+{
+    if (total_time == 0)
+    {
+        return 0.0;
+    }
+
+    unsigned long process_utime_diff = p2->utime - p1->utime;
+    unsigned long process_stime_diff = p2->stime - p1->stime;
+    unsigned long process_total_diff = process_utime_diff + process_stime_diff;
+
+    double percentage = ((double)process_total_diff / (double)total_time) * 100;
+    return percentage;
+}
+
 void process_jiffies_process_info(int pid, int i, struct Process_jiffies *cpu_array)
 {
     char path[1024];
     char buff[1024];
-    float percent = 0;
 
     snprintf(path, sizeof(path), "/proc/%d/stat", pid);
     struct Process_jiffies p = {0};
     FILE *file_ptr = fopen(path, "r");
     if (file_ptr && fgets(buff, sizeof(buff), file_ptr))
     {
-        sscanf(buff, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %lu %lu", &p.utime, &p.stime);
+        char *after_comm = strrchr(buff, ')');
+        if (after_comm)
+        {
+            sscanf(after_comm + 1, " %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", &p.utime, &p.stime);
+        }
         fclose(file_ptr);
     }
-
     cpu_array[i] = p;
 }
 

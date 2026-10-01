@@ -43,7 +43,33 @@ int main(int args, char *argv[]) // Sleep should be added in main not in other f
         process_jiffies_process_info(process[i].pid, i, cpu_arr2);
     }
 
-    
+    int percentage = get_cpu_percentage(cpu_jiffie1, cpu_jiffie2);
 
-    return 0;
+    printf("Percentage: %d\n", percentage);
+
+    unsigned long total_sys_jiff = cpu_jiffie2->total - cpu_jiffie1->total;
+
+    printf("%-8s %-25s %-8s %-12s %-10s\n", "PID", "NAME", "STATE", "MEM(KB)", "CPU(%)");
+    printf("-------------------------------------------------------------\n");
+
+    for (int i = 0; i < 10 && i < 10; i++)
+    {
+        double process_cpu_percent = calculate_process_percentages(&cp_arr1[i], &cpu_arr2[i], total_sys_jiff);
+
+        printf("%-8d %-25s %-8c %-12ld %-10.2f\n",
+               process[i].pid,
+               process[i].name,
+               process[i].state,
+               process[i].memory,
+               process_cpu_percent);
+    }
+
+    free(cp_arr1);
+    free(cpu_arr2);
+    free(cpu_jiffie1);
+    free(cpu_jiffie2);
+    free(process);
+
+
+        return 0;
 }

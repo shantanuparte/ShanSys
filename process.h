@@ -17,6 +17,9 @@ struct Process_jiffies
     unsigned long int utime;
     unsigned long int stime;
 };
+double calculate_process_percentages(struct Process_jiffies *p1,
+                                     struct Process_jiffies *p2,
+                                     unsigned long total_time);
 void process_jiffies_process_info(int pid, int i, struct Process_jiffies *cpu_array);
 struct Process_jiffies *initilize_cpu_array();
 int compare_mem(const void *a, const void *b);
