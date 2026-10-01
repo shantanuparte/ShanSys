@@ -1,8 +1,8 @@
 #include "process.h"
-#include <stdio.h>
-#include <dirent.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 struct Process_info *process = NULL;
 int process_count = 0;
@@ -11,30 +11,38 @@ int process_capacity = PROCESS_CAPACITY;
 struct Process_jiffies *cpu_array = NULL;
 int cpu_array_capacity = 10;
 
-int process_jiffies_func(int pid)
+void process_jiffies_process_info(int pid, int i)
 {
-    char path[256];
+    char path[1024];
+    char buff[1024];
     float percent = 0;
-    snprintf(path, sizeof(path), "/proc/%d/stat", pid);
-    struct Process_jiffies *p = malloc(sizeof(struct Process_jiffies));
-    FILE *file_ptr = fopen(path, "r");
 
-    
+    snprintf(path, sizeof(path), "/proc/%d/stat", pid);
+    struct Process_jiffies p = {0};
+    FILE *file_ptr = fopen(path, "r");
+    if (file_ptr && fgets(buff, sizeof(buff), file_ptr))
+{
+    sscanf(buff, "%*d %*s %*c %*d %*d %*d %*d %*d %*d %*d %*d %*d %*d %lu %lu", &p.utime, &p.stime);
+    fclose(file_ptr);
+}
+
+
+    cpu_array[i] = p;
 
 }
 
-void initilize_cpu_array()
+struct Process_jiffies *initilize_cpu_array()
 {
     cpu_array = malloc(sizeof(struct Process_jiffies) * cpu_array_capacity);
     if (cpu_array == NULL)
     {
-        fprintf(stderr,"Error: Initilization of cpu_array\n");
-        return;
+        fprintf(stderr, "Error: Initilization of cpu_array\n");
+        return NULL;
     }
-    
+    return cpu_array;
 }
 
-void initilize_process_array()
+struct Process_info* initilize_process_array()
 {
 
     process = malloc(process_capacity * sizeof(struct Process_info));
@@ -42,8 +50,10 @@ void initilize_process_array()
     if (process == NULL)
     {
         fprintf(stderr, "Error: Malloc allocation form process lol");
-        return;
+        return NULL;
     }
+
+    return process;
 }
 
 int compare_mem(const void *a, const void *b)
@@ -59,7 +69,7 @@ int compare_mem(const void *a, const void *b)
     return 0;
 }
 
-void sort_array()
+void sort_array(struct Process_info *process)
 {
 
     qsort(process, process_count, sizeof(struct Process_info), compare_mem);
@@ -70,7 +80,9 @@ void get_process_info(int pid)
     struct Process_info p = {0};
     char path[256];
     char line[256];
-    snprintf(path, sizeof(path), "/proc/%d/status", pid); // I will not get cpu% for this so have to make something in helper. remember
+    snprintf(path, sizeof(path), "/proc/%d/status",
+             pid); // I will not get cpu% for this so have to make something in
+                   // helper. remember
 
     FILE *file_ptr = fopen(path, "r");
 
@@ -98,10 +110,14 @@ void get_process_info(int pid)
     }
 
     fclose(file_ptr);
+
+    process[process_count] = p;
+    process_count++;
     if (process_count >= process_capacity)
     {
         process_capacity *= 2;
-        struct Process_info *temp = realloc(process, process_capacity * sizeof(struct Process_info));
+        struct Process_info *temp =
+            realloc(process, process_capacity * sizeof(struct Process_info));
         if (temp == NULL)
         {
             fprintf(stderr, "Error: Relloc\n");
@@ -125,18 +141,18 @@ int is_numric(const char *s)
     return 1;
 }
 
-void process_directory() // Main function in this
+struct Process_info *process_directory() // Main function in this
 {
-
+    process = initilize_process_array();
     DIR *directory;
     struct dirent *entry;
-    initilize_process_array();
+
     directory = opendir("/proc");
 
     if (directory == NULL)
     {
         fprintf(stderr, "Error opening directory");
-        return;
+        return NULL;
     }
 
     while ((entry = readdir(directory)) != NULL)
@@ -151,22 +167,9 @@ void process_directory() // Main function in this
     if (closedir(directory) == -1)
     {
         fprintf(stderr, "Error: closing directory.\n");
-        return;
+        return NULL;
     }
-    sort_array();
+    sort_array(process);
 
-    printf("%-6s %-20s %-12s %-6s\n", "PID", "NAME", "MEM (MB)", "STATE");
-    printf("--------------------------------------------------\n");
-
-    for (int i = 0; i < process_count; i++)
-    {
-        // Converting KB to MB for cleaner readability
-        double mem_mb = process[i].memory / 1024.0;
-
-        printf("%-6d %-20.20s %-12.2f %-6c\n",
-               process[i].pid,
-               process[i].name,
-               mem_mb,
-               process[i].state);
-    }
+    return process;
 }
