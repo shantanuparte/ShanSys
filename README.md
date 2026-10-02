@@ -5,10 +5,10 @@ A terminal based system monitor written in C (╥﹏╥)
 ![ShanSys screenshot](images/proc_img.png)
 
 ## Features 
-- Cpu usage and RAM with color bar
+- CPU usage and RAM with color bar
 - Load avg, uptime and batter percentage
 - Netowrking info
-- Top 10 process by memory consumtion (also shown Cpu % infront)
+- Top 10 process by memory consumtion (also shown CPU % infront)
 - Basic styling of terminal by ncurses
 
 ## Installtion 
@@ -49,14 +49,25 @@ Clone the repo ¯\\\_(ツ)\_/¯
 git clone https://github.com/shantanuparte/ShanSys.git
 ```
 
+Go to that directory
+```
+cd ShanSys
+```
+
 Compile 
 ```
-gcc -g *.c -o shansys -lncursesw
+gcc *.c -o shansys -lncursesw
 ```
 
 Run 
 ```
 ./shansys
+```
+
+To stop 
+
+```
+Ctrl + C
 ```
 
 
@@ -65,7 +76,7 @@ Run
 | File | What it does |
 | --- | --- |
 | `main.c` | Main loop and retriving funcitons |
-| `cpu.c / cpu.h` | Reads `/proc/stat` and calculates CPU usage |
+| `CPU.c / CPU.h` | Reads `/proc/stat` and calculates CPU usage |
 | `ram.c / ram.h` | Reads RAM stats |
 | `process.c / process.h` | for all porcess related things |
 | `other.c / other.h` | Battery, load average, uptime, network and ncurses things |

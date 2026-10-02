@@ -118,7 +118,13 @@ int main(int args, char *argv[]) // Sleep should be added in main not in other f
         draw_bar(1, 20, 20, percentage);
         mvprintw(2, 2, "Averge Load: %.2f", load);
         mvprintw(3, 2, "Uptime: %s", uptime);
-        mvprintw(4, 2, "Battery: %d%%", battery);
+        if (battery >= 0)
+        {
+            mvprintw(4,2,"Battry: %d%%",battery);
+        }else{
+            mvprintw(4,2,"Battry: Not deltected");
+        }
+        
 
         if (stats != NULL)
         {

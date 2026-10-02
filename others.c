@@ -7,7 +7,7 @@
 
 int get_battery_percentage()
 {
-    const char *names[] = {"BATO", "BAT1", "BATT", "CMB0"};
+    const char *names[] = {"BAT0", "BAT1", "BATT", "CMB0"};
     int cap = -1;
     char path[128];
 
