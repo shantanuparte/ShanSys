@@ -130,3 +130,15 @@ void draw_bar(int y, int x, int width, double percentage)
 }
 
 
+void draw_header_sec(int y, const char *title, int width){
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintw(y,0,"|-%s ",title);
+    int title_len = strlen(title) + 4;
+    for (int i = title_len; i < width; i++)
+    {
+        addch('-');
+    }
+    mvprintw(y,width-1, "-|");
+    attroff(COLOR_PAIR(1) | A_BOLD);
+    
+}

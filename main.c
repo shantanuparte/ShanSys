@@ -96,8 +96,7 @@ int main(int args, char *argv[]) // Sleep should be added in main not in other f
 
         get_uptime(
             uptime,
-            sizeof(uptime)
-        );
+            sizeof(uptime));
 
         unsigned long rx = 0;
         unsigned long tx = 0;
@@ -105,31 +104,63 @@ int main(int args, char *argv[]) // Sleep should be added in main not in other f
         get_net_bytes(
             "wlp2s0",
             &rx,
-            &tx
-        );
+            &tx);
 
         clear();
         int box_width = 70;
 
         attron(COLOR_PAIR(1) | A_BOLD);
-        mvprintw(0,0,"ShanSys System Monitor");
+        mvprintw(0, 0, "ShanSys System Monitor");
         attroff(COLOR_PAIR(1) | A_BOLD);
 
-        mvprintw(1, 2, "CPU Usage: %d%%",percentage);
-        mvprintw(2,2, "Averge Load: %.2f",load);
-        mvprintw(3,2, "Uptime: %s",uptime);
-        mvprintw(4,2, "Battery: %d%%",battery);
+        mvprintw(1, 2, "CPU Usage: %d%%", percentage);
+        mvprintw(2, 2, "Averge Load: %.2f", load);
+        mvprintw(3, 2, "Uptime: %s", uptime);
+        mvprintw(4, 2, "Battery: %d%%", battery);
 
         if (stats != NULL)
         {
-            mvprintw(4,2, "RAM Usage: %ld%%",stats[3]);
+            mvprintw(5, 2, "RAM Usage: %ld%%", stats[3]);
             free(stats);
         }
 
-        
-        
+        // network
+        draw_header_sec(7, "Network", box_width);
 
+        mvprintw(8, 4, "RX: %lu bytes", rx);
+        mvprintw(9, 4, "TX: %lu bytes", tx);
+
+        // process table
+        draw_header_sec(11, "Process", box_width);
+
+        attron(A_BOLD);
+        mvprintw(12, 2, "%-8s %-25s %-8s %-12s %-10s", "PID", "NAME", "STATE", "MEM(MB)", "CPU(*%*)");
+
+        attroff(A_BOLD);
+
+        
+        
+        for (int i = 0; i < 10; i++)
+        {
+            double process_cpu_percent = calculate_process_percentages(&cp_arr1[i], &cpu_arr2[i], total_sys_jiff);
+            double memory = process[i].memory / 1024;
+            mvprintw(14 + i, 2, "%-8d %-25s %-8c %-12ld %-10.2f", process[i].pid, process[i].name, process[i].state, memory, process_cpu_percent);
+        }
+
+        attron(COLOR_PAIR(1) | A_BOLD);
+        mvprintw(25, 0, "|___________________________|");
+        attroff(COLOR_PAIR(1) | A_BOLD);
+
+        refresh();
+
+        free(cpu_jiffies1);
+        free(cpu_jiffies2);
+        free(cpu_arr2);
+        free(process);
     }
+
+    free(cp_arr1);
+    endwin();
 
     return 0;
 }
