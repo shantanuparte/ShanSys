@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ncurses.h>
 
 // Battry
@@ -9,7 +10,7 @@ int get_battery_percentage()
     int cap = -1;
     FILE *battry_ptr = fopen("/sys/class/power_supply/BAT0/capacity", "r");
 
-    if (battry_ptr == NULL)
+    if (battry_ptr != NULL)
     {
         fscanf(battry_ptr, "%d", &cap);
     }
@@ -20,7 +21,7 @@ int get_battery_percentage()
 
 // avg load
 
-void get_load_avg()
+double get_load_avg()
 {
     double load = 0.0;
     FILE *fp = fopen("/proc/loadavg", "r");
@@ -54,7 +55,78 @@ void get_uptime(char *buff, size_t size)
     fclose(up_ptr);
 }
 
+// network
+void get_net_bytes(const char *iface,
+                   unsigned long *rx,
+                   unsigned long *tx)
+{
 
-//network 
+    FILE *net_ptr = fopen("/proc/net/dev", "r");
+    if (net_ptr == NULL)
+    {
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), net_ptr))
+    {
+        if (strstr(line, iface))
+        {
+            char *ptr = strchr(line, ':');
+
+            if (ptr)
+            {
+                sscanf(ptr + 1,
+                       "%lu %*u %*u %*u %*u %*u %*u %*u %lu",
+                       rx, tx);
+            }
+
+            break;
+        }
+    }
+
+    fclose(net_ptr);
+}
+
+// UI rendring
+
+void draw_bar(int y, int x, int width, double percentage)
+{
+    int fileed = (int)((percentage / 100.0) * width);
+    if (fileed > width)
+    {
+        fileed = width;
+    }
+
+    mvprintw(y, x, "[");
+    int color_pair = 0;
+    for (int i = 0; i < width; i++)
+    {
+        if (i < fileed)
+        {
+            if (percentage > 80.0)
+            {
+                color_pair = 4;
+            }
+            else if (percentage > 50.0)
+            {
+                color_pair = 3;
+            }
+            else
+            {
+                color_pair = 2;
+            }
+
+            attron(COLOR_PAIR(color_pair));
+            addstr("█");
+            attroff(COLOR_PAIR(color_pair));
+        }
+        else
+        {
+            addstr("░");
+        }
+        addstr("]");
+    }
+}
 
 
