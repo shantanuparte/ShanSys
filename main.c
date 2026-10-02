@@ -157,7 +157,7 @@ int main(int args, char *argv[]) // Sleep should be added in main not in other f
         addch('|');
 
         attroff(COLOR_PAIR(1) | A_BOLD);
-
+        
         refresh();
 
         free(cpu_jiffies1);

@@ -7,15 +7,29 @@
 
 int get_battery_percentage()
 {
+    const char *names[] = {"BATO", "BAT1", "BATT", "CMB0"};
     int cap = -1;
-    FILE *battry_ptr = fopen("/sys/class/power_supply/BAT0/capacity", "r");
+    char path[128];
 
-    if (battry_ptr != NULL)
+    for (int i = 0; i < 4; i++)
     {
-        fscanf(battry_ptr, "%d", &cap);
+        snprintf(path, sizeof(path), "/sys/class/power_supply/%s/capacity", names[i]);
+
+        FILE *battry_ptr = fopen(path, "r");
+        if (battry_ptr != NULL)
+        {
+            if (fscanf(battry_ptr, "%d", &cap) != 1)
+            {
+                cap = -1;
+            }
+            fclose(battry_ptr);
+            if (cap >= 0)
+            {
+                break;
+            }
+        }
     }
 
-    fclose(battry_ptr);
     return cap;
 }
 
@@ -60,7 +74,9 @@ void get_net_bytes(const char *iface,
                    unsigned long *rx,
                    unsigned long *tx)
 {
-
+    (void)iface; // just I didn't want to change funcitons now
+    *rx = 0;
+    *tx = 0;
     FILE *net_ptr = fopen("/proc/net/dev", "r");
     if (net_ptr == NULL)
     {
@@ -68,21 +84,35 @@ void get_net_bytes(const char *iface,
     }
 
     char line[256];
+    fgets(line, sizeof(line), net_ptr);
+    fgets(line, sizeof(line), net_ptr);
     while (fgets(line, sizeof(line), net_ptr))
     {
-        if (strstr(line, iface))
+        char *colon = strchr(line, ':');
+        if (colon == NULL)
         {
-            char *ptr = strchr(line, ':');
-
-            if (ptr)
-            {
-                sscanf(ptr + 1,
-                       "%lu %*u %*u %*u %*u %*u %*u %*u %lu",
-                       rx, tx);
-            }
-
-            break;
+            continue;
         }
+
+        *colon = '\0';
+        char *name = line;
+        while (*name == ' ')
+        {
+            name++;
+        }
+
+        if (strcmp(name, "lo") == 0)
+        {
+            continue;
+        }
+
+        unsigned long r = 0, t = 0;
+        if (sscanf(colon + 1, "%lu %*u %*u %*u %*u %*u %*u %*u %lu", &r, &t) == 2)
+        {
+            *rx += r;
+            *tx += t;
+        }
+        
     }
 
     fclose(net_ptr);
