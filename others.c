@@ -92,31 +92,32 @@ void get_net_bytes(const char *iface,
 
 void draw_bar(int y, int x, int width, double percentage)
 {
-    int fileed = (int)((percentage / 100.0) * width);
-    if (fileed > width)
+    if (percentage < 0.0)
     {
-        fileed = width;
+        percentage = 0.0;
+    }
+    if (percentage > 100.0)
+    {
+        percentage = 100.0;
     }
 
-    mvprintw(y, x, "[");
-    int color_pair = 0;
+    int fileed = (int)((percentage / 100.0) * width);
+
+    int color_pair = 2;
+    if (percentage > 80.0)
+    {
+        color_pair = 4;
+    }
+    else if (percentage > 50.0)
+    {
+        color_pair = 3;
+    }
+
+    mvaddstr(y, x, "[");
     for (int i = 0; i < width; i++)
     {
         if (i < fileed)
         {
-            if (percentage > 80.0)
-            {
-                color_pair = 4;
-            }
-            else if (percentage > 50.0)
-            {
-                color_pair = 3;
-            }
-            else
-            {
-                color_pair = 2;
-            }
-
             attron(COLOR_PAIR(color_pair));
             addstr("█");
             attroff(COLOR_PAIR(color_pair));
@@ -125,20 +126,19 @@ void draw_bar(int y, int x, int width, double percentage)
         {
             addstr("░");
         }
-        addstr("]");
     }
+    addstr("]");
 }
 
-
-void draw_header_sec(int y, const char *title, int width){
+void draw_header_sec(int y, const char *title, int width)
+{
     attron(COLOR_PAIR(1) | A_BOLD);
-    mvprintw(y,0,"|-%s ",title);
+    mvprintw(y, 0, "|-%s ", title);
     int title_len = strlen(title) + 4;
     for (int i = title_len; i < width; i++)
     {
         addch('-');
     }
-    mvprintw(y,width-1, "-|");
+    mvprintw(y, width - 1, "-|");
     attroff(COLOR_PAIR(1) | A_BOLD);
-    
 }

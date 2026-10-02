@@ -160,6 +160,10 @@ int is_numric(const char *s)
 
 struct Process_info *process_directory() // Main function in this
 {
+
+    process_count = 0;
+    process_capacity = PROCESS_CAPACITY;
+
     process = initilize_process_array();
     DIR *directory;
     struct dirent *entry;
